@@ -1,6 +1,7 @@
 package br.com.sgp.api.controller;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,8 +17,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.sgp.api.dto.UsuarioDTO;
 import br.com.sgp.api.model.Usuario;
 import br.com.sgp.api.service.UsuarioService;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping(value="/usuarios")
@@ -27,7 +30,7 @@ public class UsuarioController {
     private UsuarioService usuarioService;
 
     @GetMapping(value="/{id}")
-    public ResponseEntity<Optional<Usuario>>buscarUsuarioPeloId(@PathVariable("id") Long id){
+    public ResponseEntity<UsuarioDTO>buscarUsuarioPeloId(@PathVariable("id") Long id){
         return ResponseEntity.ok().body(usuarioService.consultarUsuarioPeloId(id));
     }
 
@@ -37,17 +40,17 @@ public class UsuarioController {
     }
 
     @PostMapping
-    public ResponseEntity<Usuario> cadastrarUsuario(@RequestBody Usuario usuario){
+    public ResponseEntity<Usuario> cadastrarUsuario(@Valid @RequestBody Usuario usuario){
         return ResponseEntity.status(HttpStatus.CREATED).body(usuarioService.salvarUsuario(usuario));
     }
 
     @PutMapping(value = "/{id}")
         public ResponseEntity<Usuario> atualizarUsuario(@PathVariable Long id, 
-            @RequestBody Usuario usuario)
+           @Valid @RequestBody Usuario usuario)
            {
-            Optional <Usuario> usuarioExistente = usuarioService.consultarUsuarioPeloId(id);
+            UsuarioDTO usuarioExistente = usuarioService.consultarUsuarioPeloId(id);
 
-            if(usuarioExistente.isEmpty()){
+            if(Objects.isNull(usuarioExistente)){
                 return ResponseEntity.notFound().build();
             }
                 usuario.setId(id);
@@ -56,9 +59,9 @@ public class UsuarioController {
 
     @DeleteMapping(value = "/{id}")
         public ResponseEntity<Void> excluirUsuario(@PathVariable Long id){
-            Optional <Usuario> usuarioExistente = usuarioService.consultarUsuarioPeloId(id);
+            UsuarioDTO usuarioExistente = usuarioService.consultarUsuarioPeloId(id);
 
-            if(usuarioExistente.isEmpty()){
+            if(Objects.isNull(usuarioExistente)){
                 return ResponseEntity.notFound().build();
             }
             usuarioService.deletarUsuario(id);

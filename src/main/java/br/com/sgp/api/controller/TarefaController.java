@@ -1,6 +1,7 @@
 package br.com.sgp.api.controller;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,10 +17,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.sgp.api.dto.TarefaDTO;
 import br.com.sgp.api.enums.Prioridade;
 import br.com.sgp.api.enums.TarefaStatus;
 import br.com.sgp.api.model.Tarefa;
 import br.com.sgp.api.service.TarefaService;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping(value="/tarefas")
@@ -31,7 +34,7 @@ public class TarefaController {
 
     //buscar tarefa pelo Id  = consultar tarefa pelo id
     @GetMapping(value="/{id}")
-    public ResponseEntity<Optional<Tarefa>>buscarTarefaPeloId(@PathVariable("id") Long id){
+    public ResponseEntity <TarefaDTO> buscarTarefaPeloId(@PathVariable("id") Long id){
         return ResponseEntity.ok().body(tarefaService.consultarTarefaPeloId(id));
     }
 
@@ -45,7 +48,7 @@ public class TarefaController {
 
     //salva a tarefa (chamando o cadastro)
     @PostMapping
-    public ResponseEntity<Tarefa> cadastrarTarefa(@RequestBody Tarefa tarefa){
+    public ResponseEntity<Tarefa> cadastrarTarefa(@Valid @RequestBody Tarefa tarefa){
         return ResponseEntity.status(HttpStatus.CREATED).body(tarefaService.salvarTarefa(tarefa));
     }
 
@@ -54,12 +57,12 @@ public class TarefaController {
     //vazio e se estiver seta como atualizado
 
     @PutMapping(value = "/{id}")
-        public ResponseEntity<Tarefa> atualizarTarefa(@PathVariable Long id, 
+        public ResponseEntity<Tarefa> atualizarTarefa(@PathVariable Long id, @Valid
             @RequestBody Tarefa tarefa)
            {
-            Optional <Tarefa> tarefaExistente = tarefaService.consultarTarefaPeloId(id);
+            TarefaDTO tarefaExistente = tarefaService.consultarTarefaPeloId(id);
 
-            if(tarefaExistente.isEmpty()){
+            if(Objects.isNull(tarefaExistente)){
                 return ResponseEntity.notFound().build();
             }
                 tarefa.setId(id);
@@ -72,9 +75,9 @@ public class TarefaController {
 
         @DeleteMapping(value = "/{id}")
         public ResponseEntity<Void> excluirTarefa(@PathVariable Long id){
-            Optional <Tarefa> tarefaExistente = tarefaService.consultarTarefaPeloId(id);
+            TarefaDTO tarefaExistente = tarefaService.consultarTarefaPeloId(id);
 
-            if(tarefaExistente.isEmpty()){
+            if(Objects.isNull(tarefaExistente)){
                 return ResponseEntity.notFound().build();
             }
             tarefaService.deletarTarefa(id);

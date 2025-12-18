@@ -1,7 +1,7 @@
 package br.com.sgp.api.controller;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,9 +16,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.sgp.api.dto.ProjetoDTO;
 import br.com.sgp.api.enums.ProjetoStatus;
 import br.com.sgp.api.model.Projeto;
 import br.com.sgp.api.service.ProjetoService;
+import jakarta.validation.Valid;
 
 
 @RestController
@@ -33,21 +35,21 @@ public class ProjetoController {
     }
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<Optional<Projeto>>buscarProjetoPeloId(@PathVariable ("id") Long id){
+    public ResponseEntity<ProjetoDTO>buscarProjetoPeloId(@PathVariable ("id") Long id){
         return ResponseEntity.ok().body(projetoService.consultarProjetoPeloId(id));
     }
 
     @PostMapping 
-    public ResponseEntity<Projeto> cadastrarProjeto(@RequestBody Projeto projeto){
+    public ResponseEntity<Projeto> cadastrarProjeto(@Valid @RequestBody Projeto projeto){
         return ResponseEntity.status(HttpStatus.CREATED).body(projetoService.salvarProjeto(projeto));
     }
     
     @PutMapping(value = "/{id}")
         public ResponseEntity<Projeto>atualizarProjeto(@PathVariable Long id, 
-            @RequestBody Projeto projeto)
+           @Valid @RequestBody Projeto projeto)
         {
-            Optional <Projeto> projetoExistente = projetoService.consultarProjetoPeloId(id);
-            if(projetoExistente.isEmpty()){
+            ProjetoDTO projetoExistente = projetoService.consultarProjetoPeloId(id);
+            if(Objects.isNull(projetoExistente)){
                 return ResponseEntity.notFound().build();
             }
             projeto.setId(id);
@@ -56,9 +58,9 @@ public class ProjetoController {
 
     @DeleteMapping(value = "/{id}")
         public ResponseEntity<Void> excluirProjeto(@PathVariable Long id){
-            Optional<Projeto> projetoExistente = projetoService.consultarProjetoPeloId(id);
+            ProjetoDTO projetoExistente = projetoService.consultarProjetoPeloId(id);
 
-            if(projetoExistente.isEmpty()){
+            if(Objects.isNull(projetoExistente)){
                 return ResponseEntity.notFound().build();
             }
             projetoService.deletarProjeto(id);
