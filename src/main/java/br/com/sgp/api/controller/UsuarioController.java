@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.sgp.api.dto.UsuarioDTO;
+import br.com.sgp.api.exception.UsuarioNaoEncontradoException;
 import br.com.sgp.api.model.Usuario;
 import br.com.sgp.api.service.UsuarioService;
 import jakarta.validation.Valid;
@@ -31,7 +32,13 @@ public class UsuarioController {
 
     @GetMapping(value="/{id}")
     public ResponseEntity<UsuarioDTO>buscarUsuarioPeloId(@PathVariable("id") Long id){
-        return ResponseEntity.ok().body(usuarioService.consultarUsuarioPeloId(id));
+        UsuarioDTO usuarioDTO = usuarioService.consultarUsuarioPeloId(id);
+
+        if(Objects.isNull(usuarioDTO)){
+            throw new UsuarioNaoEncontradoException(id);
+        }
+
+        return ResponseEntity.ok().body(usuarioDTO);
     }
 
     @GetMapping
@@ -48,10 +55,10 @@ public class UsuarioController {
         public ResponseEntity<Usuario> atualizarUsuario(@PathVariable Long id, 
            @Valid @RequestBody Usuario usuario)
            {
-            UsuarioDTO usuarioExistente = usuarioService.consultarUsuarioPeloId(id);
+            UsuarioDTO usuarioDTO = usuarioService.consultarUsuarioPeloId(id);
 
-            if(Objects.isNull(usuarioExistente)){
-                return ResponseEntity.notFound().build();
+            if(Objects.isNull(usuarioDTO)){
+                throw new UsuarioNaoEncontradoException(id);
             }
                 usuario.setId(id);
             return ResponseEntity.ok().body(usuarioService.salvarUsuario(usuario));
@@ -59,10 +66,10 @@ public class UsuarioController {
 
     @DeleteMapping(value = "/{id}")
         public ResponseEntity<Void> excluirUsuario(@PathVariable Long id){
-            UsuarioDTO usuarioExistente = usuarioService.consultarUsuarioPeloId(id);
+            UsuarioDTO usuarioDTO = usuarioService.consultarUsuarioPeloId(id);
 
-            if(Objects.isNull(usuarioExistente)){
-                return ResponseEntity.notFound().build();
+            if(Objects.isNull(usuarioDTO)){
+                throw new UsuarioNaoEncontradoException(id);
             }
             usuarioService.deletarUsuario(id);
             return ResponseEntity.noContent().build();
@@ -75,7 +82,7 @@ public class UsuarioController {
         Optional<Usuario> usuarioExistente = usuarioService.buscarUsuarioPeloCpf(cpf);
 
         if(usuarioExistente.isEmpty()){
-            return ResponseEntity.notFound().build();
+            throw new UsuarioNaoEncontradoException(cpf);
         }
         return ResponseEntity.ok().body(usuarioExistente.get());
 

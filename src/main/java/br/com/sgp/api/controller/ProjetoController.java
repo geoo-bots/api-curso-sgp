@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.sgp.api.dto.ProjetoDTO;
 import br.com.sgp.api.enums.ProjetoStatus;
+import br.com.sgp.api.exception.ProjetoNaoEncontradoException;
 import br.com.sgp.api.model.Projeto;
 import br.com.sgp.api.service.ProjetoService;
 import jakarta.validation.Valid;
@@ -36,7 +37,14 @@ public class ProjetoController {
 
     @GetMapping(value = "/{id}")
     public ResponseEntity<ProjetoDTO>buscarProjetoPeloId(@PathVariable ("id") Long id){
-        return ResponseEntity.ok().body(projetoService.consultarProjetoPeloId(id));
+        ProjetoDTO projetoDTO = projetoService.consultarProjetoPeloId(id);
+
+        if(Objects.isNull(projetoDTO)){
+            throw new ProjetoNaoEncontradoException(id);
+        }
+        
+        return ResponseEntity.ok().body(projetoDTO);    
+    
     }
 
     @PostMapping 
@@ -48,20 +56,22 @@ public class ProjetoController {
         public ResponseEntity<Projeto>atualizarProjeto(@PathVariable Long id, 
            @Valid @RequestBody Projeto projeto)
         {
-            ProjetoDTO projetoExistente = projetoService.consultarProjetoPeloId(id);
-            if(Objects.isNull(projetoExistente)){
-                return ResponseEntity.notFound().build();
+            ProjetoDTO projetoDTO = projetoService.consultarProjetoPeloId(id);
+            if(Objects.isNull(projetoDTO)){
+                throw new ProjetoNaoEncontradoException(id);
             }
+                
+            
             projeto.setId(id);
         return ResponseEntity.ok().body(projetoService.salvarProjeto(projeto));
         }
 
     @DeleteMapping(value = "/{id}")
         public ResponseEntity<Void> excluirProjeto(@PathVariable Long id){
-            ProjetoDTO projetoExistente = projetoService.consultarProjetoPeloId(id);
+            ProjetoDTO projetoDTO = projetoService.consultarProjetoPeloId(id);
 
-            if(Objects.isNull(projetoExistente)){
-                return ResponseEntity.notFound().build();
+            if(Objects.isNull(projetoDTO)){
+                throw new ProjetoNaoEncontradoException(id);
             }
             projetoService.deletarProjeto(id);
             return ResponseEntity.noContent().build();
@@ -72,7 +82,7 @@ public class ProjetoController {
         public ResponseEntity<List<Projeto>> consultarProjetoPeloStatus(@RequestParam("status") ProjetoStatus status){
             List<Projeto> projetoExistente = projetoService.filtrarProjetosPeloStatus(status);
             if(projetoExistente.isEmpty()){
-                return ResponseEntity.notFound().build();
+                throw new ProjetoNaoEncontradoException(status.toString());
             }
             return ResponseEntity.ok().body(projetoExistente);
         }

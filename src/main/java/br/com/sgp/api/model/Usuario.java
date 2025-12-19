@@ -2,6 +2,8 @@ package br.com.sgp.api.model;
 
 import java.time.LocalDate;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import br.com.sgp.api.enums.UsuarioStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -31,35 +33,37 @@ public class Usuario {
     private Long id;
 
 
-    @NotBlank // validação a nível de requisição
+    @NotBlank(message = "O campo 'nome' é obrigatório") // validação a nível de requisição
     @Column(nullable = false)
     private String nome;
 
-    @NotBlank
+    @NotBlank (message = "O campo 'cpf' é obrigatório e deve ser único!")
     @Column(nullable = false, unique = true)
     private String cpf;
 
-    @NotBlank @Email
+    @Email
+    @NotBlank(message = "O campo 'email' é obrigatório e deve ser único!")
     @Column(nullable = false, unique = true)
     private String email;
     
-    @Pattern (regexp = "^(?=.*[A-Z])(?=.*[!@#$%^&*(),.?\":{}|<>]).{1,19}$" ) //1 letra maiuscula, 1 caracter especial e deve conter números
-    @NotBlank @Size(max = 19)
+    @Pattern (regexp = "^(?=.*[0-9])(?=.*[A-Z])(?=.*[!@#$%^&*(),.?\":{}|<>]).{1,19}$" ) //1 letra maiuscula, 1 caracter especial e deve conter números
+    @NotBlank(message= "O campo 'senha' é obrigatório e deve ter no máximo  19 caracteres.")
+    @Size(max = 19)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Column (nullable = false, length = 19)
     private String senha;
     
-    @NotNull
+    @NotNull (message = "O campo 'Data de nascimento' é obrigatório.")
     @Column (nullable = false)
     private LocalDate dataNascimento;
 
 
-    @NotNull
+    @NotNull (message = "O campo 'status' é obrigatório.")
     @Column(nullable = false)
     @Enumerated(value = EnumType.STRING)
     private UsuarioStatus status;
 
 }
-
 
 
 //@Min(value = 18)

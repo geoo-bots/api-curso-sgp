@@ -29,27 +29,27 @@ public class Projeto {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank
+    @NotBlank(message= "O campo 'nome' deve ser obrigatório.")
     @Column(nullable = false)
     private String nome;
 
     @Column(columnDefinition = "TEXT")
     private String descricao;
 
-    @NotNull
+    @NotNull(message= "O campo 'data de inicio' deve ser obrigatório.")
     @Column (nullable = false)
     private LocalDate dataInicio;
 
     @Column
     private LocalDate dataConclusao;
     
-    @NotNull
+    @NotNull (message=  "O campo 'status' deve ser obrigatório.")
     @Column(nullable = false)
     @Enumerated(value = EnumType.STRING)
     private ProjetoStatus status;
 
 
-    @NotBlank
+    @NotNull (message= "O campo 'responsável' deve ser obrigatório.")
     @ManyToOne
     @JoinColumn(nullable = false)
     private Usuario responsavel;

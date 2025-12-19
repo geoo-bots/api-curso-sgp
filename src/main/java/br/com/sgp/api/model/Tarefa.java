@@ -30,7 +30,8 @@ public class Tarefa {
     @GeneratedValue (strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank @Size(max = 30)
+    @NotBlank (message = "O campo 'título' deve ser obrigatório.")
+    @Size(max = 30)
     @Column(nullable = false, length = 30)
     private String titulo;
     
@@ -39,31 +40,29 @@ public class Tarefa {
     private String descricao;
     
 
-    @NotNull
+    @NotNull (message = "O campo 'Data de criação' deve ser obrigatório.")
     @Column(nullable = false)
     private LocalDate dataCriacao;
     
     @Column
     private LocalDate dataConclusao;
 
-    @NotNull
+    @NotNull(message = "O campo 'Prioridade' deve ser obrigatório.")
     @Column(nullable = false)
     @Enumerated(value = EnumType.STRING)
     private Prioridade prioridade;
 
-    @NotNull
+    @NotNull(message=  "O campo 'status' deve ser obrigatório.")
     @Column(nullable = false)
     @Enumerated(value = EnumType.STRING)
     private TarefaStatus status; 
 
-    @NotNull
+    @NotNull(message = "O campo 'projeto' deve ser obrigatório.")
     @ManyToOne
     @JoinColumn(nullable = false)
     private Projeto projeto;
 
     @ManyToOne
     private Usuario usuario;
-
-    //checar com o professor se o usuário é nullable ou n
 
 }

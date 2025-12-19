@@ -24,6 +24,6 @@ public class ProjetoDTO {
     private LocalDate dataConclusao;
 
     private String status;
-    private Usuario responsavel; //editar
+    private Usuario responsavel; 
 
 }

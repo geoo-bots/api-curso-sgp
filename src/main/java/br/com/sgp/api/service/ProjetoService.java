@@ -46,6 +46,7 @@ public class ProjetoService {
             projetoDTO.setDataInicio(projeto.getDataInicio());
             projetoDTO.setDataConclusao(projeto.getDataConclusao());
             projetoDTO.setStatus(statusFormatado);
+            projetoDTO.setResponsavel(projeto.getResponsavel());
             
             return projetoDTO;
         }

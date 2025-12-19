@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import br.com.sgp.api.dto.TarefaDTO;
 import br.com.sgp.api.enums.Prioridade;
 import br.com.sgp.api.enums.TarefaStatus;
+import br.com.sgp.api.exception.TarefaNaoEncontradaException;
 import br.com.sgp.api.model.Tarefa;
 import br.com.sgp.api.service.TarefaService;
 import jakarta.validation.Valid;
@@ -35,8 +36,14 @@ public class TarefaController {
     //buscar tarefa pelo Id  = consultar tarefa pelo id
     @GetMapping(value="/{id}")
     public ResponseEntity <TarefaDTO> buscarTarefaPeloId(@PathVariable("id") Long id){
-        return ResponseEntity.ok().body(tarefaService.consultarTarefaPeloId(id));
-    }
+            TarefaDTO tarefaDTO = tarefaService.consultarTarefaPeloId(id);
+
+            if(Objects.isNull(tarefaDTO)){
+                throw new TarefaNaoEncontradaException(id);
+            }
+        
+            return ResponseEntity.ok().body(tarefaDTO);
+        }
 
 
     // buscar tarefas (lista de tarefas) = consultar tarefas 
@@ -60,10 +67,10 @@ public class TarefaController {
         public ResponseEntity<Tarefa> atualizarTarefa(@PathVariable Long id, @Valid
             @RequestBody Tarefa tarefa)
            {
-            TarefaDTO tarefaExistente = tarefaService.consultarTarefaPeloId(id);
+            TarefaDTO tarefaDTO = tarefaService.consultarTarefaPeloId(id);
 
-            if(Objects.isNull(tarefaExistente)){
-                return ResponseEntity.notFound().build();
+            if(Objects.isNull(tarefaDTO)){
+                throw new TarefaNaoEncontradaException(id);
             }
                 tarefa.setId(id);
             return ResponseEntity.ok().body(tarefaService.salvarTarefa(tarefa));
@@ -75,10 +82,10 @@ public class TarefaController {
 
         @DeleteMapping(value = "/{id}")
         public ResponseEntity<Void> excluirTarefa(@PathVariable Long id){
-            TarefaDTO tarefaExistente = tarefaService.consultarTarefaPeloId(id);
+            TarefaDTO tarefaDTO = tarefaService.consultarTarefaPeloId(id);
 
-            if(Objects.isNull(tarefaExistente)){
-                return ResponseEntity.notFound().build();
+            if(Objects.isNull(tarefaDTO)){
+                throw new TarefaNaoEncontradaException(id);
             }
             tarefaService.deletarTarefa(id);
             return ResponseEntity.noContent().build();
@@ -99,21 +106,17 @@ public class TarefaController {
 
     }
 
-    //get com lista 
-    //fazer a consulta e depois mandar sem get
        @GetMapping(value="/buscaPorStatus")
         public ResponseEntity<List<Tarefa>> consultarTarefaPeloStatus(@RequestParam("status") TarefaStatus status){
         List<Tarefa> tarefaExistente = tarefaService.filtrarTarefaPeloStatus(status);
 
         if(tarefaExistente.isEmpty()){
-            return ResponseEntity.notFound().build();
+            throw new TarefaNaoEncontradaException(status.toString());
         }
         return ResponseEntity.ok().body(tarefaExistente);
     }
 
     
-    //get filtrado pela prioeidade
-
        @GetMapping(value="/buscaPorPrioridade")
        public ResponseEntity<List<Tarefa>> consultarTarefaPelaPrioridade(@RequestParam("prioridade") Prioridade prioridade){
         List<Tarefa> tarefaExistente = tarefaService.filtrarTarefaPelaPrioridade(prioridade);
