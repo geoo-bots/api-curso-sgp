@@ -19,7 +19,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<MensagemErroApi> handleMethodArgumentNotValid(
         MethodArgumentNotValidException ex, WebRequest request
         ) {
-                                        ///get binding
+                                        
             List<String> erros = ex.getBindingResult().getFieldErrors().stream()
                     .map(fe -> fe.getDefaultMessage())
                     .collect(Collectors.toList());
@@ -70,5 +70,5 @@ public class GlobalExceptionHandler {
         
     }
 
-
+//geo was here
        

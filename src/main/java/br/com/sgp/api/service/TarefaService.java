@@ -32,7 +32,6 @@ public class TarefaService {
             Tarefa tarefa = tarefaExistente.get();
 
 
-            //formatacao status
 
             TarefaStatus status = tarefa.getStatus();
             String statusString = status.toString();
@@ -41,7 +40,6 @@ public class TarefaService {
             String statusFormatado = primeiroCaracterStatus + demaisCaracteresStatus;
 
 
-            //formatacao prioridade
 
             Prioridade prioridade = tarefa.getPrioridade();
             String prioridadeString = prioridade.toString();
@@ -51,8 +49,6 @@ public class TarefaService {
 
 
         
-
-
 
             TarefaDTO tarefaDTO = new TarefaDTO();
 

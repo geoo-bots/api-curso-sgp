@@ -19,37 +19,35 @@ public class UsuarioService {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
-    //INSERT INTO tb_usuarios VALUES (dados)
-    //UPDATE tb_usuarios WHERE id = ?
+  
+   
     public Usuario salvarUsuario(Usuario usuario){
         return usuarioRepository.save(usuario);
 
     }
-    //SELECT * FROM tb_usuarios
+  
     public List<Usuario> consultarUsuarios(){
         return usuarioRepository.findAll();
     }
-    //SELECT * from tb_usuarios where id = ?
+    
     public UsuarioDTO consultarUsuarioPeloId(Long id){
         Optional<Usuario> usuarioExistente = usuarioRepository.findById(id);
 
         if(usuarioExistente.isPresent()){
             Usuario usuario = usuarioExistente.get();
 
-            //pegar idade
+           
             LocalDate dataNascimento = usuario.getDataNascimento();
             LocalDate dataAtual = LocalDate.now();
             Period periodo = Period.between(dataNascimento, dataAtual);
             Integer idade = periodo.getYears();
 
-            //formatação cpf
             String cpfCadastrado = usuario.getCpf();
             String tresPrimeirosIndices = cpfCadastrado.substring(0, 3);
             String cpfFormatado = tresPrimeirosIndices + ".***.***-**";
 
-            //formatação status
 
-            UsuarioStatus status = usuario.getStatus(); // ATIVO, INATIVO
+            UsuarioStatus status = usuario.getStatus();
             String statusString = status.toString();
             String primeiroCaracter = statusString.substring(0,1).toUpperCase();
             String demaisCaracteres = statusString.substring(1).toLowerCase();
@@ -71,18 +69,18 @@ public class UsuarioService {
         return null;
     }
 
-    // DELETE FROM tb_usuarios where id = ?
+    
     public void deletarUsuario(Long id){
         usuarioRepository.deleteById(id);
 
     } 
 
-    //SELECT * FROM tb_usuarios WHERE cpf = ?
+   
     public Optional<Usuario> buscarUsuarioPeloCpf(String cpf){
         return usuarioRepository.findByCpf(cpf);
     }
 
-    //SELECT * FROM tb_usuarios WHERE cpf = ?
+   
     public Optional<Usuario> buscarUsuarioPeloEmail(String email){
         return usuarioRepository.findByEmail(email);
         

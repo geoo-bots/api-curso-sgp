@@ -31,7 +31,7 @@ public class TarefaDTO {
     private String status; 
 
    
-    private Projeto projeto; //editar
-    private Usuario usuario; //editar
+    private Projeto projeto;
+    private Usuario usuario; 
 
 }

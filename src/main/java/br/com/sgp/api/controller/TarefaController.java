@@ -32,8 +32,6 @@ public class TarefaController {
     @Autowired
     private TarefaService tarefaService;
 
-
-    //buscar tarefa pelo Id  = consultar tarefa pelo id
     @GetMapping(value="/{id}")
     public ResponseEntity <TarefaDTO> buscarTarefaPeloId(@PathVariable("id") Long id){
             TarefaDTO tarefaDTO = tarefaService.consultarTarefaPeloId(id);
@@ -46,22 +44,15 @@ public class TarefaController {
         }
 
 
-    // buscar tarefas (lista de tarefas) = consultar tarefas 
-
     @GetMapping
     public ResponseEntity<List<Tarefa>> listarTarefas(){
         return ResponseEntity.ok().body(tarefaService.consultarTarefas());
     }
 
-    //salva a tarefa (chamando o cadastro)
     @PostMapping
     public ResponseEntity<Tarefa> cadastrarTarefa(@Valid @RequestBody Tarefa tarefa){
         return ResponseEntity.status(HttpStatus.CREATED).body(tarefaService.salvarTarefa(tarefa));
     }
-
-
-    //atualiza a tarefa (primeiro consulta se a tarefa ja existe pelo consultar tarefa id, verifica no If se está
-    //vazio e se estiver seta como atualizado
 
     @PutMapping(value = "/{id}")
         public ResponseEntity<Tarefa> atualizarTarefa(@PathVariable Long id, @Valid
@@ -77,9 +68,6 @@ public class TarefaController {
         }
 
 
-        //verifica na lista de tarefas se existe uma tarefa consultada pelo id
-        // se no if da lista ela estiver vazia, ele ignora, se estiver com algo ele deleta
-
         @DeleteMapping(value = "/{id}")
         public ResponseEntity<Void> excluirTarefa(@PathVariable Long id){
             TarefaDTO tarefaDTO = tarefaService.consultarTarefaPeloId(id);
@@ -92,8 +80,6 @@ public class TarefaController {
 
         }    
 
-
-        //get optional filtrar pelo titulo
 
         @GetMapping(value="/buscaPorTitulo")
         public ResponseEntity <Tarefa> consultarTarefaPeloTitulo(@RequestParam("titulo") String titulo){
